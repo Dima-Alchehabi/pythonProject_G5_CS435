@@ -1,50 +1,73 @@
 # algorithms/railfence.py
 
-def encrypt(text, rails):
-    text = text.replace(" ", "")  # optional: remove spaces
-    fence = [[] for _ in range(rails)]
+def RailFenceEncrypt(plaintext, key):
+    plaintext = "".join(plaintext.split())
+    if key <= 1:
+        return plaintext
+        
+    rail_matrix = [['h' for i in range(len(plaintext))] for j in range(key)]
+    direction = False
+    row,column = 0
+    
+    for i in range(len(plaintext)):
+        if (row == 0) or (row == key-1):
+            direction=not direction 
+            
+    rail_matrix[row][column]=plaintext[i]
+    column+=1
+    
+    if direction:
+        row+=1
+    else:
+        row-=1
+        
+cipher_text = []
+for k in range(key):
+    for p in range(len(plaintext)):
+        if rail_matrix[k][p]!='h':
+            cipher_text.append(rail_matrix[k][p])
+            
+return "".join(cipher_text)
 
-    rail = 0
-    direction = 1  # 1 = down, -1 = up
-
-    for char in text:
-        fence[rail].append(char)
-        rail += direction
-
-        if rail == 0 or rail == rails - 1:
-            direction *= -1
-
-    encrypted = "".join("".join(row) for row in fence)
-    return encrypted
-
-
-def decrypt(ciphertext, rails):
-    # Build the zig-zag pattern
-    fence = [[] for _ in range(rails)]
-    pattern = []
-    rail = 0
-    direction = 1
-
-    for _ in ciphertext:
-        pattern.append(rail)
-        rail += direction
-
-        if rail == 0 or rail == rails - 1:
-            direction *= -1
-
-    # Fill the rails
-    rail_lengths = [pattern.count(r) for r in range(rails)]
+def RailFenceDecrypt(ciphertext,key):
+    if key <= 1:
+        return ciphertext
+        
+    rail_matrix = [['h' for i in range(len(ciphertext))] for j in range(key)]
+    
+    direction = False
+    row,column = 0
+    
+    for i in range(len(ciphertext)):
+        if (row == 0) or (row == key-1):
+            direction=not direction
+            
+    rail_matrix[row][column]='*'
+    column += 1
+    if direction:
+        row+=1
+    else:
+        row-=1
+        
     index = 0
-    for r in range(rails):
-        fence[r] = list(ciphertext[index:index + rail_lengths[r]])
-        index += rail_lengths[r]
-
-    # Read in zig-zag order
-    result = []
-    rail_index = [0] * rails
-
-    for r in pattern:
-        result.append(fence[r][rail_index[r]])
-        rail_index[r] += 1
-
-    return "".join(result)
+    for i in range(key):
+        for j in range(len(ciphertext)):
+            if rail_matrix[i][j] == '*' and index < len(ciphertext):
+                rail_matrix[i][j] = ciphertext[index]
+                index += 1
+                
+    plaintext=[]
+    direction = False
+    row, column =0
+    for i in range(len(ciphertext)):
+        if (row == 0) or (row == key-1):
+            direction=not direction
+        plaintext.append(rail_matrix[row][column])
+        column+=1
+        
+        if direction:
+            row+=1
+        else:
+            row-=1
+            
+    return "".join(plaintext)
