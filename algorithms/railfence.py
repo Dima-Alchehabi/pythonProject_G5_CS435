@@ -63,14 +63,17 @@ def decrypt(ciphertext, key):
                 
     # Read plaintext
     plaintext = []
-    direction = False
+    direction = True
     row = 0
     column = 0
 
     for i in range(len(ciphertext)):
-        if row == 0 or row == key - 1:
-            direction = not direction
+        if row == 0:
+            direction = True
 
+        elif:
+            direction = False
+    
         plaintext.append(rail_matrix[row][column])
         column += 1
         
